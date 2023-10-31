@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  xumtech
+
+  Sample SAM Template for xumtech
+
+Globals:
+  Function:
+    Timeout: 5
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref MessagesTable
+
+Resources:
+  MessagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: messages-table
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  SaveMessageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/functions/
+      Handler: save.lambdaHandler
+      Events:
+        SaveMessage:
+          Type: Api
+          Properties:
+            Path: /messages
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MessagesTable
+
+  FindMessagesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/functions/
+      Handler: findMessages.lambdaHandler
+      Events:
+        FindMessages:
+          Type: Api
+          Properties:
+            Path: /messages
+            Method: get
+            RequestParameters:
+              - method.request.querystring.message:
+                  Required: false
+                  Caching: false
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MessagesTable
+
+  FindMessageByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/functions/
+      Handler: findById.lambdaHandler
+      Events:
+        FindMessage:
+          Type: Api
+          Properties:
+            Path: /messages/{id}
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MessagesTable
