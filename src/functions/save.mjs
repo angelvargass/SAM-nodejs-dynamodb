@@ -25,7 +25,7 @@ const saveMessage = async (message) => {
         const dynamoClient = new DynamoDB.DocumentClient();
         const generatedId = uuidv4();
         message.id = generatedId;
-        await dynamoClient.put({ TableName: tableName, Item: message }).promise();
+        await dynamoClient.put({ TableName: tableName, Item: message.toLowerCase() }).promise();
         return generatedId;
     } catch (error) {
         throw new Error(error);

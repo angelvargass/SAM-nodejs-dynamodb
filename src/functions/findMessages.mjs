@@ -16,7 +16,7 @@ const findMessages = async (messageString) => {
                 TableName: tableName,
                 FilterExpression: 'message = :value',
                 ExpressionAttributeValues: {
-                    ':value': messageString
+                    ':value': messageString.toLowerCase()
                 }
             }
             const response = await dynamoClient.scan(params).promise();
