@@ -54,10 +54,6 @@ Resources:
           Properties:
             Path: /messages
             Method: get
-            RequestParameters:
-              - method.request.querystring.message:
-                  Required: false
-                  Caching: false
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref MessagesTable
